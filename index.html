@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pulse Launcher - Secure Download</title>
     <style>
+        /* Same CSS as before - keeping it clean */
         * {
             margin: 0;
             padding: 0;
@@ -57,26 +58,6 @@
             font-size: 16px;
         }
         
-        .user-info {
-            background: rgba(220, 20, 60, 0.1);
-            border: 1px solid rgba(220, 20, 60, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: none;
-        }
-        
-        .user-info.show {
-            display: block;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
         .form-group {
             margin-bottom: 25px;
         }
@@ -106,7 +87,7 @@
             box-shadow: 0 0 15px rgba(220, 20, 60, 0.4);
         }
         
-        .verify-btn, .download-btn {
+        .btn {
             width: 100%;
             padding: 18px;
             background: linear-gradient(45deg, #8B0000, #DC143C);
@@ -122,28 +103,13 @@
             margin: 10px 0;
         }
         
-        .verify-btn:hover:not(:disabled), .download-btn:hover:not(:disabled) {
+        .btn:hover:not(:disabled) {
             background: linear-gradient(45deg, #DC143C, #FF6347);
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
         }
         
-        .download-btn {
-            background: linear-gradient(45deg, #00aa00, #00ff00);
-            display: none;
-        }
-        
-        .download-btn.show {
-            display: block;
-            animation: slideUp 0.5s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .verify-btn:disabled, .download-btn:disabled {
+        .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
@@ -159,18 +125,11 @@
         .error {
             background: linear-gradient(45deg, #ff4444, #cc0000);
             border-color: #ff6666;
-            animation: shake 0.5s ease-in-out;
         }
         
         .success {
             background: linear-gradient(45deg, #00aa00, #00ff00);
             border-color: #00ff00;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
         }
         
         .loading {
@@ -195,119 +154,35 @@
             100% { transform: rotate(360deg); }
         }
         
-        .download-info {
-            background: rgba(0, 150, 136, 0.1);
-            border: 1px solid rgba(0, 150, 136, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .download-info.show {
-            display: block;
-        }
-        
-        .download-info h3 {
-            color: #00bcd4;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .download-info ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .download-info li {
-            padding: 3px 0;
-            color: #ccc;
-            font-size: 14px;
-        }
-        
-        .download-info li:before {
-            content: "⚡ ";
-            margin-right: 5px;
-        }
-        
-        .features {
-            background: rgba(220, 20, 60, 0.1);
-            border: 1px solid rgba(220, 20, 60, 0.3);
+        .security-notice {
+            background: rgba(255, 140, 0, 0.1);
+            border: 1px solid rgba(255, 140, 0, 0.3);
             border-radius: 10px;
             padding: 15px;
             margin-top: 20px;
         }
         
-        .features h3 {
-            color: #DC143C;
+        .security-notice h3 {
+            color: #FF8C00;
             margin-bottom: 10px;
             font-size: 16px;
         }
         
-        .features ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .features li {
-            padding: 3px 0;
+        .security-notice p {
             color: #ccc;
             font-size: 14px;
-        }
-        
-        .features li:before {
-            content: "✓ ";
-            color: #DC143C;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #333;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .countdown {
-            background: rgba(255, 165, 0, 0.1);
-            border: 1px solid rgba(255, 165, 0, 0.3);
-            border-radius: 10px;
-            padding: 10px;
-            margin: 10px 0;
-            text-align: center;
-            display: none;
-        }
-        
-        .countdown.show {
-            display: block;
-        }
-        
-        .countdown-timer {
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFA500;
-            font-family: 'Courier New', monospace;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">PULSE</div>
-        <div class="subtitle">🔒 Secure R2 Download Portal</div>
+        <div class="subtitle">🔒 Secure Download Portal</div>
         
         <div id="messageContainer"></div>
         
-        <div class="user-info" id="userInfo">
-            <h3>✅ License Verified</h3>
-            <p><strong>User:</strong> <span id="username"></span></p>
-            <p><strong>Verified:</strong> <span id="timestamp"></span></p>
-            <p><strong>Access Expires:</strong> <span id="expiry"></span></p>
-        </div>
-        
-        <form id="verifyForm">
+        <form id="downloadForm">
             <div class="form-group">
                 <label for="license_key">🔑 License Key</label>
                 <input type="text" 
@@ -318,71 +193,32 @@
                        required>
             </div>
             
-            <button type="submit" class="verify-btn" id="verifyBtn">
-                🔐 Verify License
+            <button type="submit" class="btn" id="submitBtn">
+                🔐 Request Download Link
             </button>
         </form>
         
-        <div class="countdown" id="countdown">
-            <p>🚀 Download starting in: <span class="countdown-timer" id="timer">5</span> seconds</p>
-        </div>
-        
-        <button class="download-btn" id="downloadBtn" onclick="startDownload()">
-            ⚡ Download PulseLauncher.exe
-        </button>
-        
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Validating license with KeyAuth...</p>
+            <p>Validating license securely...</p>
         </div>
         
-        <div class="download-info" id="downloadInfo">
-            <h3>⚡ Download Information:</h3>
-            <ul>
-                <li>Direct download from Cloudflare R2</li>
-                <li>Global CDN for maximum speed</li>
-                <li>File: PulseLauncher.exe (~2MB)</li>
-                <li>No speed limits or throttling</li>
-                <li>Instant download start</li>
-            </ul>
-        </div>
-        
-        <div class="features">
-            <h3>🚀 What You'll Get:</h3>
-            <ul>
-                <li>Advanced relax algorithms</li>
-                <li>Intelligent aimbot system</li>
-                <li>Multiple clicking modes (Single, Alt, TapX, Semi)</li>
-                <li>Undetectable injection technology</li>
-                <li>Beautiful ImGui interface</li>
-                <li>Regular updates and support</li>
-            </ul>
-        </div>
-        
-        <div class="footer">
-            <p>🛡️ Protected by KeyAuth • ⚡ Powered by Cloudflare R2</p>
-            <p>Need help? Join our Discord community</p>
+        <div class="security-notice">
+            <h3>🛡️ Security Notice</h3>
+            <p>This portal validates your license through a secure backend server. Your credentials are protected and never exposed in the browser.</p>
         </div>
     </div>
 
     <script>
-        // Your Cloudflare R2 download URL
-        const downloadUrl = 'https://pub-0b4b305912fc4cad8e6b53eb428d238d.r2.dev/PulseLauncher.exe';
+        // NO KEYAUTH CREDENTIALS HERE - ALL SECURE!
         
-        let userData = null;
-        let accessExpiry = null;
-        let countdownTimer = null;
-        
-        // Check if user already has valid access
-        checkExistingAccess();
-        
-        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+        document.getElementById('downloadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const licenseKey = document.getElementById('license_key').value.trim();
             const messageContainer = document.getElementById('messageContainer');
             const loading = document.getElementById('loading');
-            const verifyBtn = document.getElementById('verifyBtn');
+            const submitBtn = document.getElementById('submitBtn');
             
             if (!licenseKey) {
                 showMessage('Please enter your license key', 'error');
@@ -391,185 +227,54 @@
             
             // Show loading
             loading.style.display = 'block';
-            verifyBtn.disabled = true;
+            submitBtn.disabled = true;
             messageContainer.innerHTML = '';
             
             try {
-                // Step 1: Initialize KeyAuth
-                const initResponse = await fetch('https://keyauth.win/api/1.3/', {
+                // Call your secure backend API
+                const response = await fetch('https://your-secure-api.com/validate-license', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        type: 'init',
-                        ver: '1.0',
-                        name: "Karolnieckarz1111's Application", // Your exact app name
-                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        license_key: licenseKey
                     })
                 });
                 
-                const initData = await initResponse.json();
-                if (!initData.success) {
-                    showMessage('KeyAuth service error: ' + initData.message, 'error');
-                    return;
-                }
+                const data = await response.json();
                 
-                // Step 2: Validate License
-                const licenseResponse = await fetch('https://keyauth.win/api/1.3/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        type: 'license',
-                        key: licenseKey,
-                        sessionid: initData.sessionid,
-                        name: "Karolnieckarz1111's Application", // Your exact app name
-                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
-                    })
-                });
-                
-                const licenseData = await licenseResponse.json();
-                if (licenseData.success) {
-                    // License is valid - grant access
-                    userData = licenseData.info;
-                    accessExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+                if (data.success) {
+                    showMessage(`✅ Welcome ${data.username}! Starting download...`, 'success');
                     
-                    // Save to localStorage for 24-hour session
-                    localStorage.setItem('pulse_access', JSON.stringify({
-                        user: userData,
-                        expiry: accessExpiry.getTime(),
-                        granted: Date.now()
-                    }));
-                    
-                    showUserInfo(userData.username);
-                    enableDownload();
-                    showMessage('✅ License verified successfully! Download unlocked.', 'success');
-                    
-                    // Log the verification
-                    console.log(`Access granted to: ${userData.username} at ${new Date().toISOString()}`);
-                    
-                } else {
-                    showMessage('❌ ' + (licenseData.message || 'Invalid license key'), 'error');
-                }
-                
-            } catch (error) {
-                console.error('Verification error:', error);
-                showMessage('❌ Connection error. Please check your internet and try again.', 'error');
-            } finally {
-                loading.style.display = 'none';
-                verifyBtn.disabled = false;
-            }
-        });
-        
-        function checkExistingAccess() {
-            const savedAccess = localStorage.getItem('pulse_access');
-            if (savedAccess) {
-                try {
-                    const accessData = JSON.parse(savedAccess);
-                    const now = Date.now();
-                    
-                    if (now < accessData.expiry) {
-                        // Still valid
-                        userData = accessData.user;
-                        accessExpiry = new Date(accessData.expiry);
-                        showUserInfo(userData.username);
-                        enableDownload();
-                        showMessage('✅ Welcome back! Your access is still valid.', 'success');
-                    } else {
-                        // Expired
-                        localStorage.removeItem('pulse_access');
-                        showMessage('⏰ Your access has expired. Please verify your license again.', 'error');
-                    }
-                } catch (e) {
-                    localStorage.removeItem('pulse_access');
-                }
-            }
-        }
-        
-        function showUserInfo(username) {
-            document.getElementById('username').textContent = username;
-            document.getElementById('timestamp').textContent = new Date().toLocaleString();
-            document.getElementById('expiry').textContent = accessExpiry.toLocaleString();
-            document.getElementById('userInfo').classList.add('show');
-        }
-        
-        function enableDownload() {
-            document.getElementById('downloadBtn').classList.add('show');
-            document.getElementById('downloadInfo').classList.add('show');
-            document.getElementById('verifyForm').style.display = 'none';
-        }
-        
-        function startDownload() {
-            if (userData) {
-                // Show countdown
-                const countdownDiv = document.getElementById('countdown');
-                const timerElement = document.getElementById('timer');
-                const downloadBtn = document.getElementById('downloadBtn');
-                
-                countdownDiv.classList.add('show');
-                downloadBtn.disabled = true;
-                
-                let seconds = 5;
-                countdownTimer = setInterval(() => {
-                    seconds--;
-                    timerElement.textContent = seconds;
-                    
-                    if (seconds <= 0) {
-                        clearInterval(countdownTimer);
-                        
-                        // Start the actual download
+                    // Start download after 2 seconds
+                    setTimeout(() => {
                         const link = document.createElement('a');
-                        link.href = downloadUrl;
+                        link.href = data.download_url;
                         link.download = 'PulseLauncher.exe';
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
                         
-                        // Update UI
-                        countdownDiv.classList.remove('show');
-                        downloadBtn.disabled = false;
-                        downloadBtn.innerHTML = '✅ Download Started!';
-                        downloadBtn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
-                        
                         showMessage('🚀 Download started! Check your Downloads folder.', 'success');
-                        
-                        // Log the download
-                        console.log(`R2 download initiated by: ${userData.username} at ${new Date().toISOString()}`);
-                        
-                        // Reset button after 3 seconds
-                        setTimeout(() => {
-                            downloadBtn.innerHTML = '⚡ Download Again';
-                            downloadBtn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
-                        }, 3000);
-                    }
-                }, 1000);
+                    }, 2000);
+                    
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+                
+            } catch (error) {
+                showMessage('❌ Connection error. Please try again later.', 'error');
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
             }
-        }
+        });
         
         function showMessage(text, type) {
             const messageContainer = document.getElementById('messageContainer');
             messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
-            
-            // Auto-hide success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    messageContainer.innerHTML = '';
-                }, 5000);
-            }
         }
-        
-        // Handle Enter key in license input
-        document.getElementById('license_key').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('verifyForm').dispatchEvent(new Event('submit'));
-            }
-        });
-        
-        // Prevent right-click and F12 (basic protection)
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-                e.preventDefault();
-            }
-        });
     </script>
 </body>
 </html>
