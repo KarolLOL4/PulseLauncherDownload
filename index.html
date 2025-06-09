@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pulse Launcher - Secure MEGA Download</title>
+    <title>Pulse Launcher - Secure Download</title>
     <style>
         * {
             margin: 0;
@@ -195,7 +195,7 @@
             100% { transform: rotate(360deg); }
         }
         
-        .mega-info {
+        .download-info {
             background: rgba(0, 150, 136, 0.1);
             border: 1px solid rgba(0, 150, 136, 0.3);
             border-radius: 10px;
@@ -204,29 +204,29 @@
             display: none;
         }
         
-        .mega-info.show {
+        .download-info.show {
             display: block;
         }
         
-        .mega-info h3 {
+        .download-info h3 {
             color: #00bcd4;
             margin-bottom: 10px;
             font-size: 16px;
         }
         
-        .mega-info ul {
+        .download-info ul {
             list-style: none;
             padding: 0;
         }
         
-        .mega-info li {
+        .download-info li {
             padding: 3px 0;
             color: #ccc;
             font-size: 14px;
         }
         
-        .mega-info li:before {
-            content: "📁 ";
+        .download-info li:before {
+            content: "⚡ ";
             margin-right: 5px;
         }
         
@@ -270,12 +270,33 @@
             color: #666;
             font-size: 12px;
         }
+        
+        .countdown {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .countdown.show {
+            display: block;
+        }
+        
+        .countdown-timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFA500;
+            font-family: 'Courier New', monospace;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">PULSE</div>
-        <div class="subtitle">🔒 Secure MEGA Download Portal</div>
+        <div class="subtitle">🔒 Secure R2 Download Portal</div>
         
         <div id="messageContainer"></div>
         
@@ -302,8 +323,12 @@
             </button>
         </form>
         
-        <button class="download-btn" id="downloadBtn" onclick="openMegaDownload()">
-            📁 Open MEGA Download
+        <div class="countdown" id="countdown">
+            <p>🚀 Download starting in: <span class="countdown-timer" id="timer">5</span> seconds</p>
+        </div>
+        
+        <button class="download-btn" id="downloadBtn" onclick="startDownload()">
+            ⚡ Download PulseLauncher.exe
         </button>
         
         <div class="loading" id="loading">
@@ -311,14 +336,14 @@
             <p>Validating license with KeyAuth...</p>
         </div>
         
-        <div class="mega-info" id="megaInfo">
-            <h3>📁 Download Instructions:</h3>
+        <div class="download-info" id="downloadInfo">
+            <h3>⚡ Download Information:</h3>
             <ul>
-                <li>MEGA will open in a new tab</li>
-                <li>Click "Download" on the MEGA page</li>
+                <li>Direct download from Cloudflare R2</li>
+                <li>Global CDN for maximum speed</li>
                 <li>File: PulseLauncher.exe (~2MB)</li>
-                <li>High-speed download via MEGA's CDN</li>
-                <li>No download limits or throttling</li>
+                <li>No speed limits or throttling</li>
+                <li>Instant download start</li>
             </ul>
         </div>
         
@@ -335,25 +360,18 @@
         </div>
         
         <div class="footer">
-            <p>🛡️ Protected by KeyAuth • 📁 Hosted on MEGA</p>
+            <p>🛡️ Protected by KeyAuth • ⚡ Powered by Cloudflare R2</p>
             <p>Need help? Join our Discord community</p>
         </div>
     </div>
 
     <script>
-        // KeyAuth Configuration - UPDATE THESE VALUES
-        const KEYAUTH_CONFIG = {
-            name: "Karolnieckarz1111's Application",
-            ownerid: "NIsiJdyeLx",
-            hash: "YOUR_APPLICATION_HASH_HERE", // GET THIS FROM KEYAUTH DASHBOARD
-            version: "1.0"
-        };
-        
-        // REPLACE THIS WITH YOUR ACTUAL MEGA LINK
-        let megaDownloadUrl = 'https://mega.nz/file/REPLACE_WITH_YOUR_MEGA_LINK';
+        // Your Cloudflare R2 download URL
+        const downloadUrl = 'https://pub-0b4b305912fc4cad8e6b53eb428d238d.r2.dev/PulseLauncher.exe';
         
         let userData = null;
         let accessExpiry = null;
+        let countdownTimer = null;
         
         // Check if user already has valid access
         checkExistingAccess();
@@ -377,22 +395,19 @@
             messageContainer.innerHTML = '';
             
             try {
-                // Step 1: Initialize KeyAuth with hash
+                // Step 1: Initialize KeyAuth
                 const initResponse = await fetch('https://keyauth.win/api/1.3/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
                         type: 'init',
-                        ver: KEYAUTH_CONFIG.version,
-                        name: KEYAUTH_CONFIG.name,
-                        ownerid: KEYAUTH_CONFIG.ownerid,
-                        hash: KEYAUTH_CONFIG.hash // This is the important addition!
+                        ver: '1.0',
+                        name: "Karolnieckarz1111's Application", // Your exact app name
+                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
                     })
                 });
                 
                 const initData = await initResponse.json();
-                console.log('Init response:', initData); // Debug log
-                
                 if (!initData.success) {
                     showMessage('KeyAuth service error: ' + initData.message, 'error');
                     return;
@@ -406,14 +421,12 @@
                         type: 'license',
                         key: licenseKey,
                         sessionid: initData.sessionid,
-                        name: KEYAUTH_CONFIG.name,
-                        ownerid: KEYAUTH_CONFIG.ownerid
+                        name: "Karolnieckarz1111's Application", // Your exact app name
+                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
                     })
                 });
                 
                 const licenseData = await licenseResponse.json();
-                console.log('License response:', licenseData); // Debug log
-                
                 if (licenseData.success) {
                     // License is valid - grant access
                     userData = licenseData.info;
@@ -428,7 +441,7 @@
                     
                     showUserInfo(userData.username);
                     enableDownload();
-                    showMessage('✅ License verified successfully! Access granted.', 'success');
+                    showMessage('✅ License verified successfully! Download unlocked.', 'success');
                     
                     // Log the verification
                     console.log(`Access granted to: ${userData.username} at ${new Date().toISOString()}`);
@@ -480,35 +493,54 @@
         
         function enableDownload() {
             document.getElementById('downloadBtn').classList.add('show');
-            document.getElementById('megaInfo').classList.add('show');
+            document.getElementById('downloadInfo').classList.add('show');
             document.getElementById('verifyForm').style.display = 'none';
         }
         
-        function openMegaDownload() {
-            if (megaDownloadUrl === 'https://mega.nz/file/REPLACE_WITH_YOUR_MEGA_LINK') {
-                showMessage('❌ MEGA link not configured yet! Please add your MEGA link to the code.', 'error');
-                return;
-            }
-            
+        function startDownload() {
             if (userData) {
-                // Log the download attempt
-                console.log(`MEGA download initiated by: ${userData.username} at ${new Date().toISOString()}`);
+                // Show countdown
+                const countdownDiv = document.getElementById('countdown');
+                const timerElement = document.getElementById('timer');
+                const downloadBtn = document.getElementById('downloadBtn');
                 
-                // Open MEGA in new tab
-                window.open(megaDownloadUrl, '_blank');
+                countdownDiv.classList.add('show');
+                downloadBtn.disabled = true;
                 
-                showMessage('🚀 MEGA download opened! Check your new tab and click "Download".', 'success');
-                
-                // Update the button text temporarily
-                const btn = document.getElementById('downloadBtn');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '✅ MEGA Opened!';
-                btn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
-                }, 3000);
+                let seconds = 5;
+                countdownTimer = setInterval(() => {
+                    seconds--;
+                    timerElement.textContent = seconds;
+                    
+                    if (seconds <= 0) {
+                        clearInterval(countdownTimer);
+                        
+                        // Start the actual download
+                        const link = document.createElement('a');
+                        link.href = downloadUrl;
+                        link.download = 'PulseLauncher.exe';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Update UI
+                        countdownDiv.classList.remove('show');
+                        downloadBtn.disabled = false;
+                        downloadBtn.innerHTML = '✅ Download Started!';
+                        downloadBtn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
+                        
+                        showMessage('🚀 Download started! Check your Downloads folder.', 'success');
+                        
+                        // Log the download
+                        console.log(`R2 download initiated by: ${userData.username} at ${new Date().toISOString()}`);
+                        
+                        // Reset button after 3 seconds
+                        setTimeout(() => {
+                            downloadBtn.innerHTML = '⚡ Download Again';
+                            downloadBtn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
+                        }, 3000);
+                    }
+                }, 1000);
             }
         }
         
@@ -528,6 +560,14 @@
         document.getElementById('license_key').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 document.getElementById('verifyForm').dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // Prevent right-click and F12 (basic protection)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
             }
         });
     </script>
