@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse Launcher - Secure MEGA Download</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d1b1b 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.3);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            max-width: 450px;
+            width: 100%;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #DC143C, #FF6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .user-info {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .user-info.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ddd;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid #555;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #DC143C;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.4);
+        }
+        
+        .verify-btn, .download-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #8B0000, #DC143C);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px 0;
+        }
+        
+        .verify-btn:hover:not(:disabled), .download-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #DC143C, #FF6347);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
+        }
+        
+        .download-btn {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            display: none;
+        }
+        
+        .download-btn.show {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .verify-btn:disabled, .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid;
+        }
+        
+        .error {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            border-color: #ff6666;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .success {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            border-color: #00ff00;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #DC143C;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #DC143C;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .mega-info {
+            background: rgba(0, 150, 136, 0.1);
+            border: 1px solid rgba(0, 150, 136, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .mega-info.show {
+            display: block;
+        }
+        
+        .mega-info h3 {
+            color: #00bcd4;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .mega-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .mega-info li {
+            padding: 3px 0;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .mega-info li:before {
+            content: "📁 ";
+            margin-right: 5px;
+        }
+        
+        .features {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .features h3 {
+            color: #DC143C;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features li {
+            padding: 3px 0;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .features li:before {
+            content: "✓ ";
+            color: #DC143C;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">PULSE</div>
+        <div class="subtitle">🔒 Secure MEGA Download Portal</div>
+        
+        <div id="messageContainer"></div>
+        
+        <div class="user-info" id="userInfo">
+            <h3>✅ License Verified</h3>
+            <p><strong>User:</strong> <span id="username"></span></p>
+            <p><strong>Verified:</strong> <span id="timestamp"></span></p>
+            <p><strong>Access Expires:</strong> <span id="expiry"></span></p>
+        </div>
+        
+        <form id="verifyForm">
+            <div class="form-group">
+                <label for="license_key">🔑 License Key</label>
+                <input type="text" 
+                       id="license_key" 
+                       name="license_key" 
+                       placeholder="Enter your KeyAuth license key"
+                       autocomplete="off"
+                       required>
+            </div>
+            
+            <button type="submit" class="verify-btn" id="verifyBtn">
+                🔐 Verify License
+            </button>
+        </form>
+        
+        <button class="download-btn" id="downloadBtn" onclick="openMegaDownload()">
+            📁 Open MEGA Download
+        </button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Validating license with KeyAuth...</p>
+        </div>
+        
+        <div class="mega-info" id="megaInfo">
+            <h3>📁 Download Instructions:</h3>
+            <ul>
+                <li>MEGA will open in a new tab</li>
+                <li>Click "Download" on the MEGA page</li>
+                <li>File: PulseLauncher.exe (~2MB)</li>
+                <li>High-speed download via MEGA's CDN</li>
+                <li>No download limits or throttling</li>
+            </ul>
+        </div>
+        
+        <div class="features">
+            <h3>🚀 What You'll Get:</h3>
+            <ul>
+                <li>Advanced relax algorithms</li>
+                <li>Intelligent aimbot system</li>
+                <li>Multiple clicking modes (Single, Alt, TapX, Semi)</li>
+                <li>Undetectable injection technology</li>
+                <li>Beautiful ImGui interface</li>
+                <li>Regular updates and support</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>🛡️ Protected by KeyAuth • 📁 Hosted on MEGA</p>
+            <p>Need help? Join our Discord community</p>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THIS WITH YOUR ACTUAL MEGA LINK
+        let megaDownloadUrl = 'https://mega.nz/file/LQNCUCZB#mpLzLbmbDR3815DeLcIja7JyOL8RN2giazRoRtCmaW8';
+        
+        let userData = null;
+        let accessExpiry = null;
+        
+        // Check if user already has valid access
+        checkExistingAccess();
+        
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const licenseKey = document.getElementById('license_key').value.trim();
+            const messageContainer = document.getElementById('messageContainer');
+            const loading = document.getElementById('loading');
+            const verifyBtn = document.getElementById('verifyBtn');
+            
+            if (!licenseKey) {
+                showMessage('Please enter your license key', 'error');
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            verifyBtn.disabled = true;
+            messageContainer.innerHTML = '';
+            
+            try {
+                // Step 1: Initialize KeyAuth
+                const initResponse = await fetch('https://keyauth.win/api/1.3/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        type: 'init',
+                        ver: '1.2',
+                        name: "Karolnieckarz1111's Application", // Your exact app name
+                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
+                    })
+                });
+                
+                const initData = await initResponse.json();
+                if (!initData.success) {
+                    showMessage('KeyAuth service error: ' + initData.message, 'error');
+                    return;
+                }
+                
+                // Step 2: Validate License
+                const licenseResponse = await fetch('https://keyauth.win/api/1.3/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        type: 'license',
+                        key: licenseKey,
+                        sessionid: initData.sessionid,
+                        name: "Karolnieckarz1111's Application", // Your exact app name
+                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
+                    })
+                });
+                
+                const licenseData = await licenseResponse.json();
+                if (licenseData.success) {
+                    // License is valid - grant access
+                    userData = licenseData.info;
+                    accessExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+                    
+                    // Save to localStorage for 24-hour session
+                    localStorage.setItem('pulse_access', JSON.stringify({
+                        user: userData,
+                        expiry: accessExpiry.getTime(),
+                        granted: Date.now()
+                    }));
+                    
+                    showUserInfo(userData.username);
+                    enableDownload();
+                    showMessage('✅ License verified successfully! Access granted.', 'success');
+                    
+                    // Log the verification (console log for debugging)
+                    console.log(`Access granted to: ${userData.username} at ${new Date().toISOString()}`);
+                    
+                } else {
+                    showMessage('❌ ' + (licenseData.message || 'Invalid license key'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('Verification error:', error);
+                showMessage('❌ Connection error. Please check your internet and try again.', 'error');
+            } finally {
+                loading.style.display = 'none';
+                verifyBtn.disabled = false;
+            }
+        });
+        
+        function checkExistingAccess() {
+            const savedAccess = localStorage.getItem('pulse_access');
+            if (savedAccess) {
+                try {
+                    const accessData = JSON.parse(savedAccess);
+                    const now = Date.now();
+                    
+                    if (now < accessData.expiry) {
+                        // Still valid
+                        userData = accessData.user;
+                        accessExpiry = new Date(accessData.expiry);
+                        showUserInfo(userData.username);
+                        enableDownload();
+                        showMessage('✅ Welcome back! Your access is still valid.', 'success');
+                    } else {
+                        // Expired
+                        localStorage.removeItem('pulse_access');
+                        showMessage('⏰ Your access has expired. Please verify your license again.', 'error');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('pulse_access');
+                }
+            }
+        }
+        
+        function showUserInfo(username) {
+            document.getElementById('username').textContent = username;
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+            document.getElementById('expiry').textContent = accessExpiry.toLocaleString();
+            document.getElementById('userInfo').classList.add('show');
+        }
+        
+        function enableDownload() {
+            document.getElementById('downloadBtn').classList.add('show');
+            document.getElementById('megaInfo').classList.add('show');
+            document.getElementById('verifyForm').style.display = 'none';
+        }
+        
+        function openMegaDownload() {
+            if (megaDownloadUrl === 'https://mega.nz/file/REPLACE_WITH_YOUR_MEGA_LINK') {
+                showMessage('❌ MEGA link not configured yet! Please add your MEGA link to the code.', 'error');
+                return;
+            }
+            
+            if (userData) {
+                // Log the download attempt
+                console.log(`MEGA download initiated by: ${userData.username} at ${new Date().toISOString()}`);
+                
+                // Open MEGA in new tab
+                window.open(megaDownloadUrl, '_blank');
+                
+                showMessage('🚀 MEGA download opened! Check your new tab and click "Download".', 'success');
+                
+                // Update the button text temporarily
+                const btn = document.getElementById('downloadBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ MEGA Opened!';
+                btn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
+                }, 3000);
+            }
+        }
+        
+        function showMessage(text, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageContainer.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        // Handle Enter key in license input
+        document.getElementById('license_key').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('verifyForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
