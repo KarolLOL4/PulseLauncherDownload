@@ -341,8 +341,16 @@
     </div>
 
     <script>
+        // KeyAuth Configuration - UPDATE THESE VALUES
+        const KEYAUTH_CONFIG = {
+            name: "Karolnieckarz1111's Application",
+            ownerid: "NIsiJdyeLx",
+            hash: "YOUR_APPLICATION_HASH_HERE", // GET THIS FROM KEYAUTH DASHBOARD
+            version: "1.0"
+        };
+        
         // REPLACE THIS WITH YOUR ACTUAL MEGA LINK
-        let megaDownloadUrl = 'https://mega.nz/file/LQNCUCZB#mpLzLbmbDR3815DeLcIja7JyOL8RN2giazRoRtCmaW8';
+        let megaDownloadUrl = 'https://mega.nz/file/REPLACE_WITH_YOUR_MEGA_LINK';
         
         let userData = null;
         let accessExpiry = null;
@@ -369,19 +377,22 @@
             messageContainer.innerHTML = '';
             
             try {
-                // Step 1: Initialize KeyAuth
+                // Step 1: Initialize KeyAuth with hash
                 const initResponse = await fetch('https://keyauth.win/api/1.3/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
                         type: 'init',
-                        ver: '1.2',
-                        name: "Karolnieckarz1111's Application", // Your exact app name
-                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
+                        ver: KEYAUTH_CONFIG.version,
+                        name: KEYAUTH_CONFIG.name,
+                        ownerid: KEYAUTH_CONFIG.ownerid,
+                        hash: KEYAUTH_CONFIG.hash // This is the important addition!
                     })
                 });
                 
                 const initData = await initResponse.json();
+                console.log('Init response:', initData); // Debug log
+                
                 if (!initData.success) {
                     showMessage('KeyAuth service error: ' + initData.message, 'error');
                     return;
@@ -395,12 +406,14 @@
                         type: 'license',
                         key: licenseKey,
                         sessionid: initData.sessionid,
-                        name: "Karolnieckarz1111's Application", // Your exact app name
-                        ownerid: 'NIsiJdyeLx' // Your exact owner ID
+                        name: KEYAUTH_CONFIG.name,
+                        ownerid: KEYAUTH_CONFIG.ownerid
                     })
                 });
                 
                 const licenseData = await licenseResponse.json();
+                console.log('License response:', licenseData); // Debug log
+                
                 if (licenseData.success) {
                     // License is valid - grant access
                     userData = licenseData.info;
@@ -417,7 +430,7 @@
                     enableDownload();
                     showMessage('✅ License verified successfully! Access granted.', 'success');
                     
-                    // Log the verification (console log for debugging)
+                    // Log the verification
                     console.log(`Access granted to: ${userData.username} at ${new Date().toISOString()}`);
                     
                 } else {
